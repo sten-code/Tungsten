@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tungsten", "Tungsten\Tungsten.csproj", "{89016DB8-2486-49A5-9208-4EB9A27941A9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{89016DB8-2486-49A5-9208-4EB9A27941A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89016DB8-2486-49A5-9208-4EB9A27941A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89016DB8-2486-49A5-9208-4EB9A27941A9}.Debug|x64.ActiveCfg = Debug|x64
+		{89016DB8-2486-49A5-9208-4EB9A27941A9}.Debug|x64.Build.0 = Debug|x64
+		{89016DB8-2486-49A5-9208-4EB9A27941A9}.Debug|x86.ActiveCfg = Debug|x86
+		{89016DB8-2486-49A5-9208-4EB9A27941A9}.Debug|x86.Build.0 = Debug|x86
+		{89016DB8-2486-49A5-9208-4EB9A27941A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89016DB8-2486-49A5-9208-4EB9A27941A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89016DB8-2486-49A5-9208-4EB9A27941A9}.Release|x64.ActiveCfg = Release|x64
+		{89016DB8-2486-49A5-9208-4EB9A27941A9}.Release|x64.Build.0 = Release|x64
+		{89016DB8-2486-49A5-9208-4EB9A27941A9}.Release|x86.ActiveCfg = Release|x86
+		{89016DB8-2486-49A5-9208-4EB9A27941A9}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9A15FBB9-CEA7-4FBC-806B-77FDC3E74664}
+	EndGlobalSection
+EndGlobal
