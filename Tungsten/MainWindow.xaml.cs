@@ -27,7 +27,7 @@ namespace Tungsten
     {
         public ScrollViewer TabScroller;
         public string ApplicationPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-        public string PipeName = "CarbonAPI";
+        public string PipeName;
         public string DLLPath;
 
         public T GetTemplateItem<T>(Control elem, string name)
@@ -44,12 +44,18 @@ namespace Tungsten
             if (!Directory.Exists(ApplicationPath + "\\bin\\Monaco"))
             {
                 Directory.CreateDirectory(ApplicationPath + "\\bin\\Monaco");
-                new WebClient().DownloadFile("https://cdn.discordapp.com/attachments/713846997039448134/1100478003131203684/Monaco.zip", ApplicationPath + "\\Monaco.zip");
-                ZipFile.ExtractToDirectory(ApplicationPath + "\\Monaco.zip", ApplicationPath + "\\bin\\Monaco");
-                File.Delete(ApplicationPath + "\\Monaco.zip");
+                try
+                {
+                    File.WriteAllBytes(ApplicationPath + "\\Monaco.zip", Properties.Resources.Monaco);
+                    ZipFile.ExtractToDirectory(ApplicationPath + "\\Monaco.zip", ApplicationPath + "\\bin\\Monaco");
+                    File.Delete(ApplicationPath + "\\Monaco.zip");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                }
             }
 
-            DLLPath = ApplicationPath + "\\CarbonAPI.dll";
             Tabs.Loaded += delegate (object source, RoutedEventArgs e)
             {
                 GetTemplateItem<Button>(Tabs, "AddTabButton").Click += delegate (object s, RoutedEventArgs f)
@@ -106,11 +112,11 @@ namespace Tungsten
             });
             SettingsMenu.AddSettingPage("API", new List<Setting>
             {
-                new StringSetting("Pipe Name", "pipename", PipeName, (value) =>
+                new StringSetting("Pipe Name", "pipename", "CarbonAPI", (value) =>
                 {
                     PipeName = value;
                 }),
-                new FilePathSetting("DLL Path", "dllpath", DLLPath, onChange: (value) =>
+                new FilePathSetting("DLL Path", "dllpath", ApplicationPath + "\\CarbonAPI.dll", onChange: (value) =>
                 {
                     DLLPath = value;
                 })
