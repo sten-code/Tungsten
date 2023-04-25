@@ -45,7 +45,6 @@ namespace Tungsten.Settings
             Dictionary<string, JsonElement> data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
             if (data == null)
             {
-                Debug.WriteLine("no 1");
                 return defaultValue;
             }
             else
