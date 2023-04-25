@@ -1,3 +1,3 @@
 # Tungsten
 
-[![Executor](Executor.png "Executor")](https://github.com/sten-code/Tungsten/blob/master/image.png?raw=true)
+![executor]([Isolated.png](https://github.com/sten-code/Tungsten/blob/master/image.png?raw=true) "Executor")
