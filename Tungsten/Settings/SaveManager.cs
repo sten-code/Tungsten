@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
 
 namespace Tungsten.Settings
 {
@@ -18,10 +17,10 @@ namespace Tungsten.Settings
             SaveFile = new Dictionary<string, object>();
             if (File.Exists(FileName))
             {
-                Dictionary<string, JsonElement> data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(File.ReadAllText(FileName));
+                Dictionary<string, object> data = JsonConvert.DeserializeObject<Dictionary<string, object>>(File.ReadAllText(FileName));
                 if (data != null)
                 {
-                    foreach (KeyValuePair<string, JsonElement> pair in data)
+                    foreach (KeyValuePair<string, object> pair in data)
                     {
                         SaveFile[pair.Key] = pair.Value;
                     }
@@ -32,7 +31,7 @@ namespace Tungsten.Settings
         public void Save(string identifier, object value)
         {
             SaveFile[identifier] = value;
-            string json = JsonSerializer.Serialize(SaveFile);
+            string json = JsonConvert.SerializeObject(SaveFile);
             File.WriteAllText(FileName, json);
         }
 
@@ -42,7 +41,7 @@ namespace Tungsten.Settings
                 return defaultValue;
 
             string json = File.ReadAllText(FileName);
-            Dictionary<string, JsonElement> data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
+            Dictionary<string, object> data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
             if (data == null)
             {
                 return defaultValue;
@@ -51,7 +50,7 @@ namespace Tungsten.Settings
             {
                 if (data.ContainsKey(identifier))
                 {
-                    return data[identifier].Deserialize<T>();
+                    return (T)data[identifier];
                 }
                 else
                 {

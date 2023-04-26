@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using Tungsten.Settings;
 using System.Threading;
 using System.Diagnostics;
-using System.Net;
 using System.IO.Compression;
 
 namespace Tungsten
@@ -432,6 +431,8 @@ namespace Tungsten
 
         #endregion
 
+        #region ScriptHub
+
         public bool ScriptHubVisibile = false;
         public bool ScriptHubAnimating = false;
 
@@ -489,14 +490,7 @@ namespace Tungsten
             }
         }
 
-        private void Tabs_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            LogOutput("yes");
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                DragMove();
-            }
-        }
+        #endregion
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
