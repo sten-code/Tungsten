@@ -55,7 +55,7 @@
                      Loaded="TabItem_Loaded"
                      MouseDown="TabItem_MouseDown" 
                      MouseWheel="TabItem_MouseWheel">
-                    <controls:MonacoEditor x:Name="WebView" DefaultBackgroundColor="#191b21"/>
+                    <controls:MonacoEditor x:Name="WebView" />
                 </TabItem>
             </TabControl>
         </Grid>

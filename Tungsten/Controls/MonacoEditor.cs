@@ -38,6 +38,7 @@ namespace Tungsten.Controls
         public MonacoEditor()
         {
             Source = new Uri(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "\\bin\\Monaco\\Monaco.html");
+            DefaultBackgroundColor = System.Drawing.Color.FromArgb(25, 27, 33);
             CoreWebView2InitializationCompleted += (s, e) =>
             {
                 CoreWebView2.WebMessageReceived += (sender, args) =>
