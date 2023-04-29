@@ -91,6 +91,49 @@ namespace Tungsten
                 thread.Abort();
             };
 
+            StringSetting pipeSetting = new StringSetting("Pipe Name", "pipename", "CarbonAPI", onChange: (value) =>
+            {
+                PipeName = value;
+            });
+            FilePathSetting filePathSetting = new FilePathSetting("DLL Path", "dllpath", ApplicationPath + "\\CarbonAPI.dll", onChange: (value) =>
+            {
+                DLLPath = value;
+            });
+
+            SettingsMenu.AddSettingPage("API", new List<Setting>
+            {
+                new DropdownSetting("DLL", "dll", new List<string>
+                {
+                    "WeAreDevs",
+                    "CarbonAPI",
+                    "Custom",
+                }, "CarbonAPI", (value) =>
+                {
+                    switch (value)
+                    {
+                        case "WeAreDevs":
+                            filePathSetting.SetText(ApplicationPath + "\\exploit-main.dll");
+                            pipeSetting.SetText("WeAreDevsPublicAPI_Lua");
+                            pipeSetting.SetEnabled(false);
+                            filePathSetting.SetEnabled(false);
+                            break;
+                        case "CarbonAPI":
+                            filePathSetting.SetText(ApplicationPath + "\\CarbonAPI.dll");
+                            pipeSetting.SetText("CarbonAPI");
+                            pipeSetting.SetEnabled(false);
+                            filePathSetting.SetEnabled(false);
+                            break;
+                        case "Custom":
+                            pipeSetting.SetEnabled(true);
+                            filePathSetting.SetEnabled(true);
+                            break;
+                        default:
+                            break;
+                    }
+                }),
+                pipeSetting,
+                filePathSetting
+            });
             SettingsMenu.AddSettingPage("UI", new List<Setting>
             {
                 new BooleanSetting("Top Most", "topmost", false, (value) =>
@@ -107,17 +150,6 @@ namespace Tungsten
                 new NumberSetting("Auto Inject Delay", "autoinjectdelay", delay, 0, 120, 1, (value) =>
                 {
                     delay = (int)value;
-                })
-            });
-            SettingsMenu.AddSettingPage("API", new List<Setting>
-            {
-                new StringSetting("Pipe Name", "pipename", "CarbonAPI", (value) =>
-                {
-                    PipeName = value;
-                }),
-                new FilePathSetting("DLL Path", "dllpath", ApplicationPath + "\\CarbonAPI.dll", onChange: (value) =>
-                {
-                    DLLPath = value;
                 })
             });
             SettingsMenu.LoadPage(0);

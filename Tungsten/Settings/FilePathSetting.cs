@@ -12,38 +12,64 @@ namespace Tungsten.Settings
         public Action<string> OnChangeEvent { get; private set; }
         public string Filter { get; private set; }
         public string DefaultExt { get; private set; }
+        public bool IsEnabled { get; private set; }
 
-        public FilePathSetting(string name, string identifier, string defaultValue = "", string filter = "DLL Files|*.dll", string defaultExt = ".dll", Action<string> onChange = null) : base(name, identifier)
+        public FilePathSetting(string name, string identifier, string defaultValue = "", string filter = "DLL Files|*.dll", string defaultExt = ".dll", bool enabled = true, Action<string> onChange = null) : base(name, identifier)
         {
             OnChangeEvent = onChange;
             Filter = filter;
             DefaultExt = defaultExt;
+            IsEnabled = enabled;
             Value = GetValue(defaultValue);
             if (OnChangeEvent != null)
                 OnChangeEvent(Value);
         }
 
+        private TextBox TextBox;
+        private Button Button;
+
+        public void SetText(string value)
+        {
+            if (TextBox != null)
+                TextBox.Text = value;
+            else
+                Value = value;
+        }
+
+        public void SetEnabled(bool enabled)
+        {
+            if (TextBox != null && Button != null)
+            {
+                TextBox.IsReadOnly = !enabled;
+                Button.IsEnabled = enabled;
+            } else
+            {
+                IsEnabled = enabled;
+            }
+        }
+
         public override Grid GetComponent()
         {
             Grid grid = base.GetComponent();
-            TextBox textBox = new TextBox
+            TextBox = new TextBox
             {
                 HorizontalAlignment = HorizontalAlignment.Right,
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Thickness(5),
                 Width = 300,
-                Text = Value
+                Text = Value,
+                IsReadOnly = !IsEnabled
             };
-            textBox.TextChanged += (s, e) =>
+            TextBox.TextChanged += (s, e) =>
             {
-                Value = textBox.Text;
+                Value = TextBox.Text;
                 if (OnChangeEvent != null)
                     OnChangeEvent(Value);
 
                 if (SaveManager.Instance != null)
                     SaveManager.Instance.Save(Identifier, Value);
             };
-            Button btn = new Button
+            Button = new Button
             {
                 HorizontalAlignment = HorizontalAlignment.Right,
                 VerticalAlignment = VerticalAlignment.Center,
@@ -59,9 +85,10 @@ namespace Tungsten.Settings
                     Width = 15,
                     Stretch = Stretch.Uniform,
                     Margin = new Thickness(5,6,5,4),
-                }
+                },
+                IsEnabled = IsEnabled
             };
-            btn.Click += (s, e) =>
+            Button.Click += (s, e) =>
             {
                 Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog
                 {
@@ -73,11 +100,11 @@ namespace Tungsten.Settings
                 if (result == true)
                 {
                     Value = ofd.FileName;
-                    textBox.Text = Value;
+                    TextBox.Text = Value;
                 }
             };
-            grid.Children.Add(textBox);
-            grid.Children.Add(btn);
+            grid.Children.Add(TextBox);
+            grid.Children.Add(Button);
             return grid;
         }
 
