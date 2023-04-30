@@ -124,7 +124,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AnimationUtils.cs" />
     <Compile Include="Controls\MonacoEditor.cs" />
+    <Compile Include="Controls\TungstenTabs.cs" />
     <Compile Include="Injection.cs" />
     <Compile Include="ScriptHub\ScriptHub.xaml.cs">
       <DependentUpon>ScriptHub.xaml</DependentUpon>
@@ -190,7 +192,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Styles\TabControl.xaml">
+    <Page Include="Styles\TungstenTabs.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

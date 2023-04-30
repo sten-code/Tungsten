@@ -12,11 +12,11 @@
         Title="MainWindow" Height="510" Width="860"
         WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterScreen"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize" SizeChanged="Window_SizeChanged">
     <shell:WindowChrome.WindowChrome>
         <shell:WindowChrome CaptionHeight="10" 
                             UseAeroCaptionButtons="False" 
-                            NonClientFrameEdges="None"
+                            NonClientFrameEdges="None" 
                             ResizeBorderThickness="0"/>
     </shell:WindowChrome.WindowChrome>
     <Grid Background="{StaticResource BackgroundBrush}">
@@ -47,17 +47,31 @@
                 BorderThickness="0" Margin="7,25,7,7" 
                 IsReadOnly="True" 
                 VerticalScrollBarVisibility="Hidden" />
-            <TabControl x:Name="Tabs" 
+            <controls:TungstenTabs x:Name="Tabs" 
                 Grid.Row="0"
-                Background="{StaticResource BackgroundBrush}">
-                <TabItem x:Name="MainTab" 
-                     Header="New Tab"
-                     Loaded="TabItem_Loaded"
-                     MouseDown="TabItem_MouseDown" 
-                     MouseWheel="TabItem_MouseWheel">
-                    <controls:MonacoEditor x:Name="WebView" />
-                </TabItem>
-            </TabControl>
+                Background="{StaticResource BackgroundBrush}"/>
+            <StackPanel Orientation="Horizontal" 
+                        HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Height="30" Width="80">
+                <Button Width="40" Background="{StaticResource BackgroundBrush}"
+                        Click="MinimizeButton_Click">
+                    <Path Stroke="{StaticResource ForegroundBrush}"
+                          Stretch="Uniform" StrokeThickness="1.15"
+                          Width="11"
+                          Data="M2,2 l1,0"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"/>
+                </Button>
+                <Button Width="40" Background="{StaticResource BackgroundBrush}"
+                        Click="CloseButton_Click">
+                    <Path Stroke="{StaticResource ForegroundBrush}"
+                          Stretch="Uniform"
+                          Width="11"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          Data="M21 21L12 12M12 12L3 3M12 12L21.0001 3M12 12L3 21.0001"/>
+                </Button>
+            </StackPanel>
         </Grid>
             
         <settings:SettingsMenu x:Name="SettingsMenu" Grid.Column="2" Visibility="Hidden"/>

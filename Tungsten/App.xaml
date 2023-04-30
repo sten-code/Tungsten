@@ -7,7 +7,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/Button.xaml"/>
-                <ResourceDictionary Source="/Styles/TabControl.xaml"/>
+                <ResourceDictionary Source="/Styles/TungstenTabs.xaml"/>
                 <ResourceDictionary Source="/Styles/TextBox.xaml"/>
                 <ResourceDictionary Source="/Styles/ComboBox.xaml"/>
                 <ResourceDictionary Source="/Styles/CheckBox.xaml"/>

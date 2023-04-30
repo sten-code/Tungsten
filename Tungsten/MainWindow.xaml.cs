@@ -55,15 +55,7 @@ namespace Tungsten
                 }
             }
 
-            Tabs.Loaded += delegate (object source, RoutedEventArgs e)
-            {
-                GetTemplateItem<Button>(Tabs, "AddTabButton").Click += delegate (object s, RoutedEventArgs f)
-                { 
-                    MakeTab("", "New Tab");
-                };
-
-                TabScroller = GetTemplateItem<ScrollViewer>(Tabs, "TabScrollViewer");
-            };
+            Tabs.MakeTab();
 
             bool autoInject = false;
             int delay = 5;
@@ -161,108 +153,7 @@ namespace Tungsten
             OutputBox.ScrollToEnd();
         }
 
-        #region Animation bullshit
-
-        public static IEasingFunction EaseInOut { get; } = new QuarticEase
-        {
-            EasingMode = EasingMode.EaseInOut
-        };
-
-        public static IEasingFunction EaseOut { get; } = new QuarticEase
-        {
-            EasingMode = EasingMode.EaseOut
-        };
-
-        public void ObjectShift(DependencyObject obj, Thickness get, Thickness set, IEasingFunction easing, int duration = 500)
-        {
-            ThicknessAnimation anim = new ThicknessAnimation()
-            {
-                From = get,
-                To = set,
-                Duration = TimeSpan.FromMilliseconds(duration),
-                EasingFunction = easing
-            };
-            Storyboard.SetTarget(anim, obj);
-            Storyboard.SetTargetProperty(anim, new PropertyPath(MarginProperty));
-            Storyboard sb = new Storyboard();
-            sb.Children.Add(anim);
-            sb.Begin();
-            sb.Children.Remove(anim);
-        }
-
-        public void ObjectWidth(DependencyObject obj, double get, double set, IEasingFunction easing, int duration)
-        {
-            DoubleAnimation anim = new DoubleAnimation()
-            {
-                From = get,
-                To = set,
-                Duration = TimeSpan.FromMilliseconds(duration),
-                EasingFunction = easing
-            };
-            Storyboard.SetTarget(anim, obj);
-            Storyboard.SetTargetProperty(anim, new PropertyPath(WidthProperty));
-            Storyboard sb = new Storyboard();
-            sb.Children.Add(anim);
-            sb.Begin();
-            sb.Children.Remove(anim);
-        }
-
-        #endregion
-
         #region Tab bullshit
-
-        public TabItem MakeTab(string text = "", string title = "Tab")
-        {
-            TabItem tab = (TabItem)XamlReader.Parse(XamlWriter.Save(MainTab));
-            MonacoEditor editor = (MonacoEditor)tab.Content;
-            editor.Text = text;
-
-            tab.Header = title;
-            tab.MouseWheel += TabItem_MouseWheel;
-            tab.MouseDown += TabItem_MouseDown;
-            tab.Loaded += TabItem_Loaded;
-
-            Tabs.SelectedIndex = Tabs.Items.Add(tab);
-            ObjectWidth(tab, 0, 104, EaseInOut, 200);
-            return tab;
-        }
-
-        public async void CloseTab(TabItem tab)
-        {
-            ObjectWidth(tab, 104, 0, EaseInOut, 200);
-            await Task.Delay(200);
-            Tabs.Items.Remove(tab);
-            ((WebView2)tab.Content).Dispose();
-        }
-
-        private void TabItem_Loaded(object sender, RoutedEventArgs e)
-        {
-            TabItem tab = (TabItem)sender;
-
-            GetTemplateItem<Button>(tab, "CloseButton").Click += delegate (object r, RoutedEventArgs f)
-            {
-                CloseTab(tab);
-            };
-
-            TabScroller.ScrollToRightEnd();
-        }
-
-        private void TabItem_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            TabItem tab = (TabItem)sender;
-            if (e.OriginalSource is Border || e.OriginalSource is TextBlock)
-            {
-                if (e.MiddleButton == MouseButtonState.Pressed)
-                {
-                    CloseTab(tab);
-                }
-            }
-        }
-
-        private void TabItem_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            TabScroller.ScrollToHorizontalOffset(TabScroller.HorizontalOffset + e.Delta / 10);
-        }
 
         #endregion
 
@@ -393,7 +284,7 @@ namespace Tungsten
                     title = title.Substring(0, title.Length - 1);
                 }
 
-                MakeTab(File.ReadAllText(file), title);
+                Tabs.MakeTab(File.ReadAllText(file), title);
             }
 
             DragFinish(hDrop);
@@ -425,9 +316,9 @@ namespace Tungsten
                 if (webView != null && !ScriptHubVisibile)
                     webView.Margin = new Thickness(0);
 
-                ObjectShift(SettingsMenu, new Thickness(SettingsMenu.ActualWidth, 0, 0, 0), new Thickness(0), EaseInOut);
+                AnimationUtils.ObjectShift(SettingsMenu, new Thickness(SettingsMenu.ActualWidth, 0, 0, 0), new Thickness(0), AnimationUtils.EaseInOut);
                 if (webView != null && !ScriptHubVisibile)
-                    ObjectShift(webView, webView.Margin, new Thickness(0, 0, webView.ActualWidth, 0), EaseInOut);
+                    AnimationUtils.ObjectShift(webView, webView.Margin, new Thickness(0, 0, webView.ActualWidth, 0), AnimationUtils.EaseInOut);
                 await Task.Delay(500);
 
                 SettingsMenu.Visibility = Visibility.Visible;
@@ -448,9 +339,9 @@ namespace Tungsten
                 if (webView != null && !ScriptHubVisibile)
                     webView.Margin = new Thickness(0, 0, webView.ActualWidth, 0);
 
-                ObjectShift(SettingsMenu, new Thickness(0), new Thickness(SettingsMenu.ActualWidth, 0, 0, 0), EaseInOut);
+                AnimationUtils.ObjectShift(SettingsMenu, new Thickness(0), new Thickness(SettingsMenu.ActualWidth, 0, 0, 0), AnimationUtils.EaseInOut);
                 if (webView != null && !ScriptHubVisibile)
-                    ObjectShift(webView, webView.Margin, new Thickness(0), EaseInOut);
+                    AnimationUtils.ObjectShift(webView, webView.Margin, new Thickness(0), AnimationUtils.EaseInOut);
                 await Task.Delay(500);
 
                 SettingsMenu.Visibility = Visibility.Hidden;
@@ -486,9 +377,9 @@ namespace Tungsten
                 if (webView != null && !SettingsVisibile)
                     webView.Margin = new Thickness(0);
 
-                ObjectShift(ScriptHub, new Thickness(ScriptHub.ActualWidth, 0, 0, 0), new Thickness(0), EaseInOut);
+                AnimationUtils.ObjectShift(ScriptHub, new Thickness(ScriptHub.ActualWidth, 0, 0, 0), new Thickness(0), AnimationUtils.EaseInOut);
                 if (webView != null && !SettingsVisibile)
-                    ObjectShift(webView, webView.Margin, new Thickness(0, 0, webView.ActualWidth, 0), EaseInOut);
+                    AnimationUtils.ObjectShift(webView, webView.Margin, new Thickness(0, 0, webView.ActualWidth, 0), AnimationUtils.EaseInOut);
                 await Task.Delay(500);
 
                 ScriptHub.Visibility = Visibility.Visible;
@@ -509,9 +400,9 @@ namespace Tungsten
                 if (webView != null && !SettingsVisibile)
                     webView.Margin = new Thickness(0, 0, webView.ActualWidth, 0);
 
-                ObjectShift(ScriptHub, new Thickness(0), new Thickness(ScriptHub.ActualWidth, 0, 0, 0), EaseInOut);
+                AnimationUtils.ObjectShift(ScriptHub, new Thickness(0), new Thickness(ScriptHub.ActualWidth, 0, 0, 0), AnimationUtils.EaseInOut);
                 if (webView != null && !SettingsVisibile)
-                    ObjectShift(webView, webView.Margin, new Thickness(0), EaseInOut);
+                    AnimationUtils.ObjectShift(webView, webView.Margin, new Thickness(0), AnimationUtils.EaseInOut);
                 await Task.Delay(500);
 
                 ScriptHub.Visibility = Visibility.Hidden;
@@ -527,6 +418,16 @@ namespace Tungsten
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            Tabs.WindowResized();
+        }
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
         }
 
     }
