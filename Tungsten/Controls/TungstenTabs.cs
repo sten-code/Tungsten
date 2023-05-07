@@ -127,7 +127,7 @@ namespace Tungsten.Controls
         public async void CloseTab(TabItem tab)
         {
             AnimationUtils.AnimateWidth(tab, tab.ActualWidth, 0, AnimationUtils.EaseInOut, 200);
-            double maxWidth = ActualWidth - 120;
+            double maxWidth = ActualWidth - MaxWidthSubtraction;
             double width = -(TabWidth + TabSpacing);
             foreach (TabItem t in Items)
             {

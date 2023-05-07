@@ -17,7 +17,6 @@
         <shell:WindowChrome CaptionHeight="10" 
                             UseAeroCaptionButtons="False" 
                             NonClientFrameEdges="None"
-                            GlassFrameThickness="0"
                             ResizeBorderThickness="5"/>
     </shell:WindowChrome.WindowChrome>
     <Grid Background="{StaticResource BackgroundBrush}">

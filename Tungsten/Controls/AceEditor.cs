@@ -33,7 +33,7 @@ namespace Tungsten.Controls
         {
             while (!IsLoaded)
                 await Task.Delay(100);
-            return JsonConvert.DeserializeObject<string>(await CoreWebView2.ExecuteScriptAsync("editor.getValue()"));// The string gets returned as "while true do\r\n\r\nend" instead of an already parsed string, json has the exact same rules so a json parser can convert it to a normal string.
+            return JsonConvert.DeserializeObject<string>(await CoreWebView2.ExecuteScriptAsync("editor.getValue()")); // The string gets returned as "while true do\r\n\r\nend" instead of an already parsed string, json has the exact same rules so a json parser can convert it to a normal string.
         }
 
         public new bool IsLoaded = false;
