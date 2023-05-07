@@ -12,14 +12,25 @@
         Title="MainWindow" Height="510" Width="860"
         WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterScreen"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
-        ResizeMode="NoResize" SizeChanged="Window_SizeChanged">
+        ResizeMode="CanResize" SizeChanged="Window_SizeChanged">
     <shell:WindowChrome.WindowChrome>
         <shell:WindowChrome CaptionHeight="10" 
                             UseAeroCaptionButtons="False" 
-                            NonClientFrameEdges="None" 
-                            ResizeBorderThickness="0"/>
+                            NonClientFrameEdges="None"
+                            GlassFrameThickness="0"
+                            ResizeBorderThickness="5"/>
     </shell:WindowChrome.WindowChrome>
     <Grid Background="{StaticResource BackgroundBrush}">
+        <Grid.Style>
+            <Style TargetType="{x:Type Grid}">
+                <Setter Property="Margin" Value="0" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}" Value="Maximized">
+                        <Setter Property="Margin" Value="8" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="40"/>
             <ColumnDefinition Width="1"/>
@@ -27,8 +38,8 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="*" MaxHeight="447" MinHeight="25" />
+                <RowDefinition/>
+                <RowDefinition Height="125" MaxHeight="447" MinHeight="25" />
             </Grid.RowDefinitions>
 
             <Border Grid.Row="1" Height="1" VerticalAlignment="Top" Background="{StaticResource BorderBrush}"/>
@@ -38,15 +49,18 @@
                       Fill="{StaticResource ForegroundBrush}" Stretch="Uniform"
                       Width="14" Height="10"
                       Margin="7,0,0,0" VerticalAlignment="Center"/>
-                <TextBlock Text="Console" Margin="7" VerticalAlignment="Center" Foreground="{StaticResource ForegroundBrush}"/>
+                <TextBlock Text="Console" 
+                           Margin="7" 
+                           VerticalAlignment="Center" 
+                           Foreground="{StaticResource ForegroundBrush}"/>
             </StackPanel>
             <TextBox x:Name="OutputBox" 
-                Grid.Row="1"
-                Foreground="{StaticResource ForegroundBrush}"
-                Background="{StaticResource BackgroundBrush}" 
-                BorderThickness="0" Margin="7,25,7,7" 
-                IsReadOnly="True" 
-                VerticalScrollBarVisibility="Hidden" />
+                     Grid.Row="1"
+                     Foreground="{StaticResource ForegroundBrush}"
+                     Background="{StaticResource BackgroundBrush}" 
+                     Margin="7,25,7,7"
+                     IsReadOnly="True"
+                     VerticalScrollBarVisibility="Hidden" />
             <controls:TungstenTabs x:Name="Tabs" 
                 Grid.Row="0"
                 Background="{StaticResource BackgroundBrush}"/>

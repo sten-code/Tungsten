@@ -63,6 +63,16 @@ namespace Tungsten.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] Ace {
+            get {
+                object obj = ResourceManager.GetObject("Ace", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] Monaco {
             get {
                 object obj = ResourceManager.GetObject("Monaco", resourceCulture);

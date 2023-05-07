@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media.Animation;
 using System.IO;
 using System.Reflection;
 using Microsoft.Web.WebView2.Wpf;
-using System.Windows.Markup;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -34,28 +31,32 @@ namespace Tungsten
             return elem.Template.FindName(name, elem) is T name1 ? name1 : default;
         }
 
-        public MainWindow()
+        public void ExtractZipFromResources(string name, byte[] resource)
         {
-            InitializeComponent();
-            if (!Directory.Exists(ApplicationPath + "\\bin"))
-                Directory.CreateDirectory(ApplicationPath + "\\bin");
-
-            if (!Directory.Exists(ApplicationPath + "\\bin\\Monaco"))
+            if (!Directory.Exists(ApplicationPath + "\\bin\\" + name))
             {
-                Directory.CreateDirectory(ApplicationPath + "\\bin\\Monaco");
+                Directory.CreateDirectory(ApplicationPath + "\\bin\\" + name);
                 try
                 {
-                    File.WriteAllBytes(ApplicationPath + "\\Monaco.zip", Properties.Resources.Monaco);
-                    ZipFile.ExtractToDirectory(ApplicationPath + "\\Monaco.zip", ApplicationPath + "\\bin\\Monaco");
-                    File.Delete(ApplicationPath + "\\Monaco.zip");
+                    File.WriteAllBytes($"{ApplicationPath}\\{name}.zip", resource);
+                    ZipFile.ExtractToDirectory($"{ApplicationPath}\\{name}.zip", ApplicationPath + "\\bin\\" + name);
+                    File.Delete($"{ApplicationPath}\\{name}.zip");
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine(ex.Message);
                 }
             }
+        }
 
-            Tabs.MakeTab();
+        public MainWindow()
+        {
+            InitializeComponent();
+            if (!Directory.Exists(ApplicationPath + "\\bin"))
+                Directory.CreateDirectory(ApplicationPath + "\\bin");
+
+            ExtractZipFromResources("Monaco", Properties.Resources.Monaco);
+            ExtractZipFromResources("Ace", Properties.Resources.Ace);
 
             bool autoInject = false;
             int delay = 5;
@@ -99,7 +100,7 @@ namespace Tungsten
                     "WeAreDevs",
                     "CarbonAPI",
                     "Custom",
-                }, "CarbonAPI", (value) =>
+                }, "CarbonAPI", (value, isInit) =>
                 {
                     switch (value)
                     {
@@ -131,6 +132,20 @@ namespace Tungsten
                 new BooleanSetting("Top Most", "topmost", false, (value) =>
                 {
                     Topmost = value;
+                }),
+                new DropdownSetting("Editor", "editor", new List<string>
+                {
+                    "Ace",
+                    "Monaco"
+                }, "Ace", (value, isInit) =>
+                {
+                    if (isInit) 
+                    {
+                        Tabs.Editor = value;
+                        Tabs.MakeTab();
+                    }
+                    else
+                        Tabs.SwitchToEditor(value);
                 })
             });
             SettingsMenu.AddSettingPage("Internal", new List<Setting>
@@ -152,10 +167,6 @@ namespace Tungsten
             OutputBox.Text += $"[{DateTime.Now:HH:mm:ss}] {message}\n";
             OutputBox.ScrollToEnd();
         }
-
-        #region Tab bullshit
-
-        #endregion
 
         #region Injection and Execution
 
@@ -199,16 +210,22 @@ namespace Tungsten
             Inject();
         }
 
-        private void ExecuteButton_Click(object sender, RoutedEventArgs e)
+        private async void ExecuteButton_Click(object sender, RoutedEventArgs e)
         {
             if (!Injection.NamedPipeExists(PipeName))
             {
                 LogOutput("Named Pipe doesn't exist.");
                 return;
             }
-
-            MonacoEditor editor = (MonacoEditor)Tabs.SelectedContent;
-            Injection.WriteToPipe(editor.Text, PipeName);
+            if (Tabs.Editor == "Ace")
+            {
+                AceEditor editor = (AceEditor)Tabs.SelectedContent;
+                Injection.WriteToPipe(await editor.GetText(), PipeName);
+            } else if (Tabs.Editor == "Monaco")
+            {
+                MonacoEditor editor = (MonacoEditor)Tabs.SelectedContent;
+                Injection.WriteToPipe(editor.Text, PipeName);
+            }
         }
 
         #endregion
@@ -316,9 +333,9 @@ namespace Tungsten
                 if (webView != null && !ScriptHubVisibile)
                     webView.Margin = new Thickness(0);
 
-                AnimationUtils.ObjectShift(SettingsMenu, new Thickness(SettingsMenu.ActualWidth, 0, 0, 0), new Thickness(0), AnimationUtils.EaseInOut);
+                AnimationUtils.AnimateMargin(SettingsMenu, new Thickness(SettingsMenu.ActualWidth, 0, 0, 0), new Thickness(0), AnimationUtils.EaseInOut);
                 if (webView != null && !ScriptHubVisibile)
-                    AnimationUtils.ObjectShift(webView, webView.Margin, new Thickness(0, 0, webView.ActualWidth, 0), AnimationUtils.EaseInOut);
+                    AnimationUtils.AnimateMargin(webView, webView.Margin, new Thickness(0, 0, webView.ActualWidth, 0), AnimationUtils.EaseInOut);
                 await Task.Delay(500);
 
                 SettingsMenu.Visibility = Visibility.Visible;
@@ -339,9 +356,9 @@ namespace Tungsten
                 if (webView != null && !ScriptHubVisibile)
                     webView.Margin = new Thickness(0, 0, webView.ActualWidth, 0);
 
-                AnimationUtils.ObjectShift(SettingsMenu, new Thickness(0), new Thickness(SettingsMenu.ActualWidth, 0, 0, 0), AnimationUtils.EaseInOut);
+                AnimationUtils.AnimateMargin(SettingsMenu, new Thickness(0), new Thickness(SettingsMenu.ActualWidth, 0, 0, 0), AnimationUtils.EaseInOut);
                 if (webView != null && !ScriptHubVisibile)
-                    AnimationUtils.ObjectShift(webView, webView.Margin, new Thickness(0), AnimationUtils.EaseInOut);
+                    AnimationUtils.AnimateMargin(webView, webView.Margin, new Thickness(0), AnimationUtils.EaseInOut);
                 await Task.Delay(500);
 
                 SettingsMenu.Visibility = Visibility.Hidden;
@@ -377,9 +394,9 @@ namespace Tungsten
                 if (webView != null && !SettingsVisibile)
                     webView.Margin = new Thickness(0);
 
-                AnimationUtils.ObjectShift(ScriptHub, new Thickness(ScriptHub.ActualWidth, 0, 0, 0), new Thickness(0), AnimationUtils.EaseInOut);
+                AnimationUtils.AnimateMargin(ScriptHub, new Thickness(ScriptHub.ActualWidth, 0, 0, 0), new Thickness(0), AnimationUtils.EaseInOut);
                 if (webView != null && !SettingsVisibile)
-                    AnimationUtils.ObjectShift(webView, webView.Margin, new Thickness(0, 0, webView.ActualWidth, 0), AnimationUtils.EaseInOut);
+                    AnimationUtils.AnimateMargin(webView, webView.Margin, new Thickness(0, 0, webView.ActualWidth, 0), AnimationUtils.EaseInOut);
                 await Task.Delay(500);
 
                 ScriptHub.Visibility = Visibility.Visible;
@@ -400,9 +417,9 @@ namespace Tungsten
                 if (webView != null && !SettingsVisibile)
                     webView.Margin = new Thickness(0, 0, webView.ActualWidth, 0);
 
-                AnimationUtils.ObjectShift(ScriptHub, new Thickness(0), new Thickness(ScriptHub.ActualWidth, 0, 0, 0), AnimationUtils.EaseInOut);
+                AnimationUtils.AnimateMargin(ScriptHub, new Thickness(0), new Thickness(ScriptHub.ActualWidth, 0, 0, 0), AnimationUtils.EaseInOut);
                 if (webView != null && !SettingsVisibile)
-                    AnimationUtils.ObjectShift(webView, webView.Margin, new Thickness(0), AnimationUtils.EaseInOut);
+                    AnimationUtils.AnimateMargin(webView, webView.Margin, new Thickness(0), AnimationUtils.EaseInOut);
                 await Task.Delay(500);
 
                 ScriptHub.Visibility = Visibility.Hidden;

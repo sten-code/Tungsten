@@ -4,6 +4,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Web.WebView2.Wpf;
+using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace Tungsten.Controls
 {
@@ -34,11 +36,15 @@ namespace Tungsten.Controls
         {
             TabItem tab = new TabItem
             {
-                Header = title,
-                Content = new MonacoEditor
-                {
-                    Text = text
-                }
+                Header = title
+            };
+            if (Editor == "Ace") tab.Content = new AceEditor
+            {
+                Text = text
+            };
+            if (Editor == "Monaco") tab.Content = new MonacoEditor
+            {
+                Text = text
             };
 
             tab.MouseDown += (s, e) =>
@@ -68,21 +74,59 @@ namespace Tungsten.Controls
             double newWidth = TabWidth;
             if (width > maxWidth)
             {
-                newWidth = (maxWidth - addTabButtonWidth) / (double)(Items.Count + 1);
+                newWidth = (maxWidth - addTabButtonWidth) / (Items.Count + 1);
                 foreach (TabItem t in Items)
                 {
-                    AnimationUtils.ObjectWidth(t, t.ActualWidth, newWidth, AnimationUtils.EaseInOut, 200);
+                    AnimationUtils.AnimateWidth(t, t.ActualWidth, newWidth, AnimationUtils.EaseInOut, 200);
                 }
             }
 
             SelectedIndex = Items.Add(tab);
-            AnimationUtils.ObjectWidth(tab, 0, newWidth, AnimationUtils.EaseInOut, 200);
+            AnimationUtils.AnimateWidth(tab, 0, newWidth, AnimationUtils.EaseInOut, 200);
             return tab;
+        }
+
+        public string Editor;
+
+        public async void SwitchToEditor(string editor)
+        {
+            if (Editor == editor) return;
+
+            Editor = editor;
+            if (editor == "Ace")
+            {
+                foreach (TabItem t in Items)
+                {
+                    MonacoEditor monaco = (MonacoEditor)t.Content;
+                    string content = monaco.Text;
+                    Thickness margin = monaco.Margin;
+                    monaco.Dispose();
+                    t.Content = new AceEditor
+                    {
+                        Text = content,
+                        Margin = margin
+                    };
+                }
+            } else if (editor == "Monaco")
+            {
+                foreach (TabItem t in Items)
+                {
+                    AceEditor ace = (AceEditor)t.Content;
+                    string content = await ace.GetText();
+                    Thickness margin = ace.Margin;
+                    ace.Dispose();
+                    t.Content = new MonacoEditor
+                    {
+                        Text = content,
+                        Margin = margin,
+                    };
+                }
+            }
         }
 
         public async void CloseTab(TabItem tab)
         {
-            AnimationUtils.ObjectWidth(tab, tab.ActualWidth, 0, AnimationUtils.EaseInOut, 200);
+            AnimationUtils.AnimateWidth(tab, tab.ActualWidth, 0, AnimationUtils.EaseInOut, 200);
             double maxWidth = ActualWidth - 120;
             double width = -(TabWidth + TabSpacing);
             foreach (TabItem t in Items)
@@ -92,11 +136,11 @@ namespace Tungsten.Controls
 
             if (width < maxWidth)
             {
-                double newWidth = Math.Min((maxWidth - addTabButtonWidth) / (double)(Items.Count - 1), TabWidth);
+                double newWidth = Math.Min((maxWidth - addTabButtonWidth) / (Items.Count - 1), TabWidth);
                 foreach (TabItem t in Items)
                 {
                     if (t != tab)
-                        AnimationUtils.ObjectWidth(t, t.ActualWidth, newWidth, AnimationUtils.EaseInOut, 200);
+                        AnimationUtils.AnimateWidth(t, t.ActualWidth, newWidth, AnimationUtils.EaseInOut, 200);
                 }
             }
 
@@ -117,7 +161,7 @@ namespace Tungsten.Controls
             double newWidth = Math.Min((maxWidth - addTabButtonWidth) / (Items.Count), TabWidth);
             foreach (TabItem t in Items)
             {
-                AnimationUtils.ObjectWidth(t, t.ActualWidth, newWidth, AnimationUtils.EaseInOut, 0); // For some reason setting the width doesn't work so an animation with a duration of 0ms will have to do.
+                AnimationUtils.AnimateWidth(t, t.ActualWidth, newWidth, AnimationUtils.EaseInOut, 0); // For some reason setting the width doesn't work so an animation with a duration of 0ms will have to do.
             }
         }
 

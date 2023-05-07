@@ -125,6 +125,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AnimationUtils.cs" />
+    <Compile Include="Controls\AceEditor.cs" />
     <Compile Include="Controls\MonacoEditor.cs" />
     <Compile Include="Controls\TungstenTabs.cs" />
     <Compile Include="Injection.cs" />
@@ -228,6 +229,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resources\Ace.zip" />
     <None Include="Resources\Monaco.zip" />
   </ItemGroup>
   <ItemGroup>
